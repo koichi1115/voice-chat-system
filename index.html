@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="音声対話Webシステム - 子供向けAI音声チャットシステム">
+    <meta name="keywords" content="音声チャット, AI, 子供向け, 学習">
+    <meta name="author" content="Voice Chat System Team">
+    
+    <title>音声チャット - 子供向けAIチャット</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/reset.css">
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/typography.css">
+    <link rel="stylesheet" href="css/layouts/grid.css">
+    <link rel="stylesheet" href="css/layouts/header.css">
+    <link rel="stylesheet" href="css/layouts/navigation.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <link rel="stylesheet" href="css/components/cards.css">
+    <link rel="stylesheet" href="css/components/modals.css">
+    <link rel="stylesheet" href="css/components/forms.css">
+    <link rel="stylesheet" href="css/pages/chat.css">
+    <link rel="stylesheet" href="css/utilities/spacing.css">
+    <link rel="stylesheet" href="css/utilities/responsive.css">
+    <link rel="stylesheet" href="css/utilities/accessibility.css">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="js/app.js" as="script">
+    <link rel="preload" href="css/components/buttons.css" as="style">
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link sr-only-focusable">メインコンテンツへスキップ</a>
+    
+    <!-- Header -->
+    <header role="banner" class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <span class="icon" aria-hidden="true">🤖</span>
+                    音声チャット
+                </h1>
+                
+                <nav role="navigation" aria-label="設定ナビゲーション" class="header-nav">
+                    <ul>
+                        <li>
+                            <button type="button" 
+                                    class="nav-button" 
+                                    id="settings-btn"
+                                    aria-label="設定を開く"
+                                    data-modal="settings">
+                                <span aria-hidden="true">⚙️</span>
+                                <span class="nav-text">設定</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" 
+                                    class="nav-button" 
+                                    id="history-btn"
+                                    aria-label="履歴を開く"
+                                    data-modal="history">
+                                <span aria-hidden="true">📚</span>
+                                <span class="nav-text">履歴</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" 
+                                    class="nav-button" 
+                                    id="help-btn"
+                                    aria-label="ヘルプを開く"
+                                    data-modal="help">
+                                <span aria-hidden="true">❓</span>
+                                <span class="nav-text">ヘルプ</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main" id="main-content" class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section" aria-label="ウェルカムメッセージ">
+                <div class="character-container">
+                    <div class="ai-character" id="ai-character" role="img" aria-label="AIアシスタント">
+                        <span class="character-face">🤖</span>
+                    </div>
+                    <div class="speech-bubble" id="welcome-message">
+                        <p>こんにちは！<br>何でも聞いてね！</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Voice Input Section -->
+            <section class="voice-input-section" aria-label="音声入力エリア">
+                <div class="voice-controls">
+                    <!-- Main Voice Button -->
+                    <button type="button" 
+                            class="btn-voice-main" 
+                            id="voice-button"
+                            aria-describedby="voice-instructions voice-status"
+                            data-state="ready">
+                        <span class="btn-icon" aria-hidden="true">🎤</span>
+                        <span class="btn-text">話しかける</span>
+                    </button>
+                    
+                    <!-- Voice Status Indicator -->
+                    <div class="status-indicator" 
+                         id="voice-status" 
+                         role="status" 
+                         aria-live="polite">
+                        <span class="status-icon" aria-hidden="true">●</span>
+                        <span class="status-text">準備完了</span>
+                    </div>
+                    
+                    <!-- Voice Instructions -->
+                    <div id="voice-instructions" class="instructions">
+                        ボタンを押して音声で質問してください
+                    </div>
+                </div>
+
+                <!-- Alternative Input -->
+                <div class="alternative-input">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            id="text-input-btn"
+                            aria-label="文字で質問する">
+                        <span aria-hidden="true">⌨️</span>
+                        文字で質問
+                    </button>
+                </div>
+            </section>
+
+            <!-- Recognition Result Display -->
+            <section class="recognition-section" 
+                     id="recognition-section"
+                     aria-label="音声認識結果"
+                     style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>聞き取った内容</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="recognition-result" 
+                             id="recognition-result"
+                             role="log"
+                             aria-live="polite">
+                            <!-- 認識結果がここに表示されます -->
+                        </div>
+                        
+                        <div class="recognition-actions">
+                            <button type="button" 
+                                    class="btn-secondary" 
+                                    id="recognition-retry">
+                                <span aria-hidden="true">🔄</span>
+                                やり直し
+                            </button>
+                            <button type="button" 
+                                    class="btn-secondary" 
+                                    id="recognition-edit">
+                                <span aria-hidden="true">✏️</span>
+                                編集
+                            </button>
+                            <button type="button" 
+                                    class="btn-primary" 
+                                    id="recognition-send">
+                                <span aria-hidden="true">📤</span>
+                                送信
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conversation Display -->
+            <section class="conversation-section" 
+                     id="conversation-section"
+                     aria-label="会話履歴"
+                     style="display: none;">
+                <div class="conversation-container">
+                    <h2 class="section-title">会話</h2>
+                    
+                    <div class="conversation-log" 
+                         id="conversation-log"
+                         role="log"
+                         aria-live="polite"
+                         aria-label="会話内容">
+                        <!-- 会話内容がここに動的に追加されます -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick History Preview -->
+            <section class="quick-history" 
+                     id="quick-history"
+                     aria-label="最近の質問">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>最近の質問</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="history-preview" id="history-preview">
+                            <p class="empty-state">まだ質問がありません。<br>最初の質問をしてみましょう！</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer Navigation (Mobile) -->
+    <nav role="navigation" 
+         aria-label="メインナビゲーション" 
+         class="mobile-nav">
+        <ul>
+            <li>
+                <button type="button" 
+                        class="mobile-nav-item" 
+                        data-action="home"
+                        aria-current="page">
+                    <span class="nav-icon" aria-hidden="true">🏠</span>
+                    <span class="nav-label">ホーム</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" 
+                        class="mobile-nav-item" 
+                        data-action="settings">
+                    <span class="nav-icon" aria-hidden="true">⚙️</span>
+                    <span class="nav-label">設定</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" 
+                        class="mobile-nav-item" 
+                        data-action="history">
+                    <span class="nav-icon" aria-hidden="true">📚</span>
+                    <span class="nav-label">履歴</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" 
+                        class="mobile-nav-item" 
+                        data-action="help">
+                    <span class="nav-icon" aria-hidden="true">❓</span>
+                    <span class="nav-label">ヘルプ</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal-container">
+        <!-- モーダルがここに動的に生成されます -->
+    </div>
+
+    <!-- Error Toast Container -->
+    <div id="toast-container" 
+         class="toast-container" 
+         role="region" 
+         aria-label="通知メッセージ">
+        <!-- エラートーストがここに動的に生成されます -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" 
+         class="loading-overlay" 
+         style="display: none;"
+         role="dialog"
+         aria-label="読み込み中"
+         aria-modal="true">
+        <div class="loading-content">
+            <div class="loading-spinner" aria-hidden="true"></div>
+            <p class="loading-text">処理中...</p>
+        </div>
+    </div>
+
+    <!-- Hidden Form for Text Input -->
+    <form id="text-input-form" style="display: none;" role="dialog" aria-modal="true">
+        <div class="form-overlay">
+            <div class="form-content">
+                <h2>文字で質問</h2>
+                <div class="form-group">
+                    <label for="text-question">質問を入力してください</label>
+                    <textarea id="text-question" 
+                              name="question"
+                              rows="3"
+                              placeholder="例：恐竜について教えて"
+                              aria-describedby="text-help"></textarea>
+                    <div id="text-help" class="help-text">
+                        何でも気軽に質問してください
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="text-cancel">
+                        キャンセル
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        送信
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Template Elements (Hidden) -->
+    <template id="conversation-entry-template">
+        <div class="conversation-entry" role="article">
+            <div class="question-bubble">
+                <div class="bubble-header">
+                    <span class="speaker-icon" aria-hidden="true">👤</span>
+                    <span class="speaker-name">あなた</span>
+                    <span class="timestamp"></span>
+                </div>
+                <div class="bubble-content question-text"></div>
+            </div>
+            
+            <div class="answer-bubble">
+                <div class="bubble-header">
+                    <span class="speaker-icon" aria-hidden="true">🤖</span>
+                    <span class="speaker-name">AI</span>
+                    <span class="provider-badge"></span>
+                </div>
+                <div class="bubble-content answer-text"></div>
+                <div class="answer-controls">
+                    <button type="button" 
+                            class="control-btn" 
+                            data-action="speak"
+                            aria-label="音声で再生">
+                        <span aria-hidden="true">🔊</span>
+                    </button>
+                    <button type="button" 
+                            class="control-btn" 
+                            data-action="copy"
+                            aria-label="回答をコピー">
+                        <span aria-hidden="true">📋</span>
+                    </button>
+                    <button type="button" 
+                            class="control-btn" 
+                            data-action="feedback"
+                            aria-label="フィードバック">
+                        <span aria-hidden="true">⭐</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="error-toast-template">
+        <div class="error-toast" role="alert">
+            <div class="toast-content">
+                <div class="toast-icon"></div>
+                <div class="toast-message">
+                    <div class="message-text"></div>
+                    <div class="suggestions"></div>
+                </div>
+                <button type="button" 
+                        class="toast-close" 
+                        aria-label="閉じる">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Configuration Script -->
+    <script src="config/config.js"></script>
+    
+    <!-- Core JavaScript Modules -->
+    <script type="module" src="js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Analytics and Error Reporting (Optional) -->
+    <script>
+        // グローバルエラーハンドラー
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            // エラー報告システムがあればここで送信
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            // エラー報告システムがあればここで送信
+        });
+    </script>
+</body>
+</html>
